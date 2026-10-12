@@ -1,0 +1,8 @@
+target/
+.idea/
+*.iml
+.vscode/
+.env
+*.log
+log.txt
+chay-local.ps1
