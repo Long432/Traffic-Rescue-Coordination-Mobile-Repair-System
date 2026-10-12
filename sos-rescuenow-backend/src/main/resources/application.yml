@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: sos-rescuenow
+  datasource:
+    # Can bat TCP/IP cho SQL Server (cong 1433). Xem README.
+    url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORT:1433};databaseName=${DB_NAME:SosRescueNow};encrypt=true;trustServerCertificate=true
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Schema do script SQL (database/01_tao_csdl.sql) quan ly, khong de Hibernate tu sua.
+      ddl-auto: none
+      naming:
+        # Giu NGUYEN ten bang/cot (NguoiDung, HoTen...). Mac dinh cua Spring Boot se doi thanh nguoi_dung.
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+server:
+  port: 8080
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: PT24H
+
+sos:
+  admin:
+    # Neu dat ca hai bien moi truong, luc khoi dong se tao tai khoan quan tri vien (neu chua co).
+    so-dien-thoai: ${ADMIN_SDT:}
+    mat-khau: ${ADMIN_MAT_KHAU:}
