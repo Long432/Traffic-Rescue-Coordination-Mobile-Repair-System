@@ -1,8 +1,4 @@
-target/
-.idea/
-*.iml
-.vscode/
+# Database and sensitive configs - KHÒNG COMMIT LÊN GIT
 .env
+target/
 *.log
-log.txt
-chay-local.ps1

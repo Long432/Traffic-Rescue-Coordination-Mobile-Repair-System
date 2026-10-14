@@ -31,9 +31,7 @@ public class DanhGiaService {
     private final DanhGiaRepository danhGiaRepository;
     private final HoSoThoRepository hoSoThoRepository;
 
-    public DanhGiaService(CuocCuuHoRepository cuocRepository,
-                          DanhGiaRepository danhGiaRepository,
-                          HoSoThoRepository hoSoThoRepository) {
+    public DanhGiaService(CuocCuuHoRepository cuocRepository, DanhGiaRepository danhGiaRepository, HoSoThoRepository hoSoThoRepository) {
         this.cuocRepository = cuocRepository;
         this.danhGiaRepository = danhGiaRepository;
         this.hoSoThoRepository = hoSoThoRepository;
