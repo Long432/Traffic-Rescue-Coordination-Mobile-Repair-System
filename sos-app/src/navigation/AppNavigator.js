@@ -10,6 +10,7 @@ import { ThoProvider } from '../tho/ThoContext';
 import { mau } from '../theme';
 import DangKyScreen from '../screens/DangKyScreen';
 import DangNhapScreen from '../screens/DangNhapScreen';
+import AdminHomeScreen from '../screens/admin/AdminHomeScreen';
 import KhachHomeScreen from '../screens/khach/KhachHomeScreen';
 import LichSuScreen from '../screens/khach/LichSuScreen';
 import TheoDoiCuocScreen from '../screens/khach/TheoDoiCuocScreen';
@@ -103,11 +104,27 @@ function ThoStack() {
   );
 }
 
+function AdminStack() {
+  const { dangXuat } = useAuth();
+  return (
+    <Stack.Navigator screenOptions={tuyChonChung}>
+      <Stack.Screen
+        name="AdminHome"
+        component={AdminHomeScreen}
+        options={{
+          title: 'Quản trị - duyệt thợ',
+          headerRight: () => <NutTieuDe nhan="Thoát" onPress={() => xacNhanDangXuat(dangXuat)} />,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function KhongHoTro() {
   const { dangXuat } = useAuth();
   return (
     <View style={styles.giua}>
-      <Text style={styles.thongBao}>Tài khoản quản trị viên không dùng ứng dụng di động này.</Text>
+      <Text style={styles.thongBao}>Vai trò tài khoản không được hỗ trợ trong ứng dụng này.</Text>
       <Nut nhan="Đăng xuất" kieu="phu" onPress={dangXuat} />
     </View>
   );
@@ -126,6 +143,8 @@ export default function AppNavigator() {
     noiDung = <KhachStack />;
   } else if (phien.vaiTro === 'THO') {
     noiDung = <ThoStack />;
+  } else if (phien.vaiTro === 'ADMIN') {
+    noiDung = <AdminStack />;
   } else {
     noiDung = <KhongHoTro />;
   }

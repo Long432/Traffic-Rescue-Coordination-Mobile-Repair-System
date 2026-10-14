@@ -10,6 +10,7 @@ import The from '../../components/The';
 import TrangThaiChip from '../../components/TrangThaiChip';
 import { useTho } from '../../tho/ThoContext';
 import { banKinh, mau } from '../../theme';
+import { chiDuongToi } from '../../utils/chiDuong';
 import { khoangCachKm } from '../../utils/khoangCach';
 import { BUOC_TIEP_CUA_THO, daKetThuc, formatKhoangCach, formatTien, thoCoTheTra } from '../../utils/nhan';
 
@@ -166,6 +167,12 @@ export default function ThoCuocScreen({ route, navigation }) {
       ) : (
         <View style={styles.khoiNut}>
           {buoc ? <Nut nhan={buoc.nhan} kieu="xanh" onPress={() => chuyen(buoc.den)} dangTai={dangDoi} /> : null}
+          <Nut
+            nhan="Chỉ đường (Google Maps)"
+            kieu="phu"
+            onPress={() => chiDuongToi({ latitude: cuoc.latitude, longitude: cuoc.longitude })}
+            style={styles.nutTra}
+          />
           {thoCoTheTra(cuoc.trangThai) ? (
             <Nut nhan="Trả cuốc" kieu="phu" onPress={() => setHienTraCuoc(true)} voHieu={dangDoi} style={styles.nutTra} />
           ) : null}

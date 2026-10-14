@@ -21,3 +21,11 @@ export const thoCuocQuanhToi = () => goi('GET', '/api/tho/cuoc-quanh-toi');
 export const thoNhanCuoc = (id) => goi('POST', `/api/tho/cuoc/${id}/nhan`);
 export const thoChuyenTrangThai = (id, trangThai) => goi('POST', `/api/tho/cuoc/${id}/trang-thai`, { trangThai });
 export const thoTraCuoc = (id, lyDo) => goi('POST', `/api/tho/cuoc/${id}/tra-cuoc`, { lyDo });
+
+// ---- Danh gia ----
+export const danhGiaCuoc = (id, soSao, nhanXet) => goi('POST', `/api/cuoc/${id}/danh-gia`, { soSao, nhanXet });
+export const xemDanhGia = (id) => goi('GET', `/api/cuoc/${id}/danh-gia`);
+
+// ---- Quan tri vien ----
+export const adminDanhSachTho = (chiChuaDuyet) => goi('GET', `/api/admin/tho?chiChuaDuyet=${chiChuaDuyet ? 'true' : 'false'}`);
+export const adminDuyetTho = (id) => goi('POST', `/api/admin/tho/${id}/duyet`);

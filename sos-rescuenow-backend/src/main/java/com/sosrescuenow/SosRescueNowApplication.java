@@ -12,3 +12,4 @@ public class SosRescueNowApplication {
         SpringApplication.run(SosRescueNowApplication.class, args);
     }
 }
+        

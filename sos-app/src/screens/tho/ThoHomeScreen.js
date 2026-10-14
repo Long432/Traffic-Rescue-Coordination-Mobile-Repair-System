@@ -149,6 +149,7 @@ export default function ThoHomeScreen({ navigation }) {
               trackColor={{ true: mau.xanhLa, false: mau.vien }}
             />
           </View>
+          <Text style={styles.viTri}>Đánh giá của khách: {Number(hoSo.diemTrungBinh).toFixed(2)} ★</Text>
           {hoSo.online ? (
             <Text style={styles.viTri}>
               {viTri
