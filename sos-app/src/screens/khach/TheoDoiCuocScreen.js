@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as api from '../../api';
 import BanDo from '../../components/BanDo';
+import ChonSao from '../../components/ChonSao';
 import ManHinhTai from '../../components/ManHinhTai';
 import Nut from '../../components/Nut';
 import The from '../../components/The';
 import TrangThaiChip from '../../components/TrangThaiChip';
+import TruongNhap from '../../components/TruongNhap';
 import { banKinh, mau } from '../../theme';
+import { xemTrenGoogleMaps } from '../../utils/chiDuong';
 import { khoangCachKm } from '../../utils/khoangCach';
 import { daKetThuc, formatKhoangCach, formatTien, khachCoTheHuy } from '../../utils/nhan';
 
@@ -24,6 +27,11 @@ export default function TheoDoiCuocScreen({ route, navigation }) {
   const [tho, setTho] = useState(null);
   const [loi, setLoi] = useState(null);
   const [dangHuy, setDangHuy] = useState(false);
+  const [danhGia, setDanhGia] = useState(undefined); // undefined: dang tai, null: chua danh gia, doi tuong: da danh gia
+  const [soSao, setSoSao] = useState(0);
+  const [nhanXet, setNhanXet] = useState('');
+  const [dangGuiDanhGia, setDangGuiDanhGia] = useState(false);
+  const hoanThanh = cuoc !== null && cuoc.trangThai === 'HOAN_THANH';
 
   // Hoi server moi 3 giay cho den khi cuoc ket thuc (WebSocket se thay the o module sau).
   useEffect(() => {
@@ -66,6 +74,44 @@ export default function TheoDoiCuocScreen({ route, navigation }) {
       clearTimeout(hen);
     };
   }, [cuocId]);
+
+  // Khi cuoc hoan thanh: kiem tra khach da danh gia chua.
+  useEffect(() => {
+    if (!hoanThanh) {
+      return undefined;
+    }
+    let huy = false;
+    api
+      .xemDanhGia(cuocId)
+      .then((d) => {
+        if (!huy) {
+          setDanhGia(d);
+        }
+      })
+      .catch(() => {
+        if (!huy) {
+          setDanhGia(null);
+        }
+      });
+    return () => {
+      huy = true;
+    };
+  }, [hoanThanh, cuocId]);
+
+  const guiDanhGia = async () => {
+    if (soSao < 1) {
+      Alert.alert('Chưa chọn số sao', 'Hãy chạm vào số sao bạn muốn tặng thợ.');
+      return;
+    }
+    setDangGuiDanhGia(true);
+    try {
+      setDanhGia(await api.danhGiaCuoc(cuocId, soSao, nhanXet.trim() || null));
+    } catch (e) {
+      Alert.alert('Không gửi được đánh giá', e.message);
+    } finally {
+      setDangGuiDanhGia(false);
+    }
+  };
 
   const huyYeuCau = () => {
     Alert.alert('Hủy yêu cầu?', 'Bạn chắc chắn muốn hủy yêu cầu cứu hộ này?', [
@@ -149,6 +195,42 @@ export default function TheoDoiCuocScreen({ route, navigation }) {
         {loi ? <Text style={styles.loi}>Mất kết nối tạm thời: {loi}</Text> : null}
       </The>
 
+      {!ketThuc && coViTriTho ? (
+        <Nut
+          nhan="Xem vị trí thợ trong Google Maps"
+          kieu="phu"
+          onPress={() => xemTrenGoogleMaps({ latitude: tho.latitude, longitude: tho.longitude })}
+          style={styles.nutXemBanDo}
+        />
+      ) : null}
+
+      {cuoc.trangThai === 'HOAN_THANH' ? (
+        <The style={styles.theDanhGia}>
+          {danhGia === undefined ? (
+            <ActivityIndicator color={mau.cam} />
+          ) : danhGia ? (
+            <View>
+              <Text style={styles.tieuDeDanhGia}>Cảm ơn bạn đã đánh giá!</Text>
+              <ChonSao giaTri={danhGia.soSao} />
+              {danhGia.nhanXet ? <Text style={styles.nhanXet}>{danhGia.nhanXet}</Text> : null}
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.tieuDeDanhGia}>Bạn thấy thợ phục vụ thế nào?</Text>
+              <ChonSao giaTri={soSao} onChon={setSoSao} />
+              <TruongNhap
+                nhan="Nhận xét (không bắt buộc)"
+                value={nhanXet}
+                onChangeText={setNhanXet}
+                maxLength={500}
+                multiline
+              />
+              <Nut nhan="Gửi đánh giá" kieu="xanh" onPress={guiDanhGia} dangTai={dangGuiDanhGia} />
+            </View>
+          )}
+        </The>
+      ) : null}
+
       {ketThuc ? (
         <View>
           <Text style={styles.ketThuc}>{LOI_NHAN_KET_THUC[cuoc.trangThai]}</Text>
@@ -177,5 +259,9 @@ const styles = StyleSheet.create({
   tongTien: { fontSize: 16, fontWeight: '700', color: mau.xanhLa, marginTop: 4 },
   phu: { color: mau.chuPhu, marginTop: 2 },
   loi: { color: mau.loi, marginTop: 8 },
+  theDanhGia: { marginHorizontal: 16 },
+  tieuDeDanhGia: { fontSize: 17, fontWeight: '700', color: mau.chu, textAlign: 'center' },
+  nhanXet: { textAlign: 'center', color: mau.chuPhu, fontStyle: 'italic' },
+  nutXemBanDo: { marginHorizontal: 16, marginBottom: 12 },
   ketThuc: { marginHorizontal: 16, marginBottom: 12, fontSize: 16, color: mau.chu, textAlign: 'center' },
 });
